@@ -10,6 +10,7 @@ import (
 	"github.com/fresanov/proglog/internal/log"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 func TestServer(t *testing.T) {
@@ -108,8 +109,8 @@ func testConsumePastBoundary(t *testing.T, client api.LogClient, config *Config)
 	if consume != nil {
 		t.Fatal("consume not nil")
 	}
-	got := grpc.Code(err)
-	want := grpc.Code(api.ErrOffsetOutOfRange{}.GRPCStatus().Err())
+	got := status.Code(err)
+	want := status.Code(api.ErrOffsetOutOfRange{}.GRPCStatus().Err())
 	if got != want {
 		t.Fatalf("got err: %v, want: %v", got, want)
 	}
@@ -128,7 +129,7 @@ func testProduceConsumeStream(t *testing.T, client api.LogClient, config *Config
 	{
 		stream, err := client.ProduceStream(ctx)
 		require.NoError(t, err)
-		
+
 		for offset, record := range records {
 			err = stream.Send(&api.ProduceRequest{
 				Record: record,
@@ -145,7 +146,7 @@ func testProduceConsumeStream(t *testing.T, client api.LogClient, config *Config
 			}
 		}
 	}
-	
+
 	{
 		stream, err := client.ConsumeStream(
 			ctx,
