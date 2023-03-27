@@ -80,3 +80,8 @@ func (s *subConn) UpdateAddresses(addrs []resolver.Address) {
 }
 
 func (s *subConn) Connect() {}
+
+func (s *subConn) GetOrBuildProducer(pb balancer.ProducerBuilder) (balancer.Producer, func()) {
+	var dummy interface{}
+	return dummy, func() {}
+}
